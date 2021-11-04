@@ -1,0 +1,82 @@
+1)
+
+N = 14;
+
+void barrera (int id){
+	d = 1;
+	int waitID
+	while(d < N){
+		
+		arrive[id] = arrive[id] + 1;
+		waitID = (id + d - 1 ) % N + 1;
+		d = d+d;
+		
+ 		<await (arrive[waitId] >= arrive[id])>
+		
+	}
+}
+
+
+2)
+
+
+int ne = 0, no = 0, de = 0, do = 0;
+sem mtx = 1, oeste = 0, este = 0;
+
+process OESTE[i=1 to M]
+{
+	while(true){
+		P(mtx);
+		if(de > 0 || ne > 0){
+			do = dw + 1;
+			V(mxt);
+			P(oeste);
+		}
+		
+		no = no +1;
+		V(mtx);
+		// pasar puente;
+		
+		P(mtx);
+		no = no - 1;
+		if(no == 0 && de > 0){
+			de = de - 1;
+			V(e);
+		
+		}else{
+			V(mtx)
+		}	
+	}
+}
+
+3) 
+
+int entradas = 0;
+cond hayEntradas , noEntradas;
+
+
+procedure comprarEntada(){
+	
+	while(numEntradas == 0)
+		wait(hayEntradas);
+	
+	--numEntradas;
+	
+	if(numEntradas == 0)
+		signal(noEntradas);
+	
+}
+
+procedure esperarNoQuedan(){
+
+	if(numEntradas != 0)
+		wait(noEntradas);
+
+}
+
+procedure ponerEEntradas(){
+
+	numEntradas = E;
+	if(!empty(hayEntradas)) signal_All(hayEntradas);
+
+}

@@ -1,0 +1,29 @@
+t1 tiempo;
+
+SJN.Ruest(t1);
+/*USO*/
+SJN.Release();
+
+SJN.Request(t2);
+/*USO*/
+SJN.Release();
+
+*wait con prioridad
+*pasar la condicion.
+
+monitor SJN {
+		bool free = true;
+		cond turn;
+
+		procedure request(int time){
+			if(free) free = false;
+			else wait(turn, time);
+							//para que nos ordene.
+		}
+
+		procedure release(){
+			if(empty(turn)) free = true;			
+			else signal(turn);
+		}
+	}
+	

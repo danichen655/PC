@@ -1,0 +1,178 @@
+
+6.1.1. Solución con AWAIT
+	int nw = 0, nr = 0;
+	process Reader[i = 1 to M]
+		while(true){
+			< await (nw == 0); nr = nr + 1; >
+			read(DB);
+			<nr = nr - 1; >
+		}
+
+	process Writer[i = 1 to N]
+	while(true){
+		< await (nr == 0 ^ nw == 0); nw = nw + 1; >
+		write(DB);
+		< nw = nw - 1; >
+	}
+
+6.1.2. Solución con SEMÁFOROS
+La ejecución atómica la implementamos asegurando exclusión mutua en nr, nw.
+
+  int nw = 0, nr = 0;
+  sem rw = 1, mutexR = 1;
+
+  process Reader[i = 1 to N]
+  	while(true){
+
+  	P(mutexR);
+  	nr = nr + 1;
+  	if(nr > 0)
+  		P(rw);
+  	V(mutexR);
+
+  	read(DB);
+
+  	P(mutexR);
+  	nr = nr - 1;
+  	if(nr = 0)
+  		V(rw);
+  	V(mutexR);
+  	}
+
+  process Writer[i = 1 to M]
+  	while(true){
+    	P(rw);
+ 
+  		write(DB);
+  		
+  		V(rw);
+  	}
+	
+	
+Paso de testigo: pasar q el semaforo de forma implicita y no abrir y cerrar el semaforo, ya que sino entraria otro cualquiera
+ 
+6.1.3. Solución 1 con PASO DE TESTIGOS
+	int nr = 0, dr = 0, nw = 0, dw = 0;
+	sem r = 0, w = 0, mtx = 1;
+
+	process Reader[i = 1 to M]
+		while(true){
+			P(mtx);
+			if(nw > 0){
+				dr = dr + 1;
+				V(mtx); 
+				P(r);			/* Paso de Testigo a lector en espera */
+			}
+			
+			nr = nr + 1;
+
+			if(dr > 0){
+				dr = dr - 1;	/* Recibo de Testigo de lector en espera */
+				V(r);
+			} else V(mtx);
+
+			read(DB);
+
+			P(mtx);
+			nr = nr - 1;
+			if(nr == 0 && dw > 0){
+				dw = dw - 1;
+				V(w);			/* Paso de Testigo a escritoe en espera */
+			}else{
+				V(mtx)
+			}
+
+		}
+
+	process Writer[i = 1 to N]
+		while(true){
+			P(mtx);
+			if(nr > 0 || nw > 0){
+				dw = dw+ 1;
+				V(mtx);
+				P(w);
+			}
+			
+			nw = nw + 1;
+			V(mtx);
+			
+			write(BD);
+			
+			P(mtx);
+			nw = nw - 1;
+			if(dw > 0){
+				dw = dw - 1;
+				V(w);			/* Paso de Testigo a escritoe en espera */
+			}else if (dr > 0){
+				dr = dr -1;
+				V(r);
+			}else{
+				V(mtx)
+			}
+		
+		}
+
+
+
+int nr = 0,nw,dr,dw
+sem mtx = 1, reader= 0, writer = 0
+
+process Reader[i = 1 to M]{
+	
+	P(mtx);
+	
+	if(nw > 0){
+		dr++;
+		V(mtx);
+		P(reader);
+	}
+
+	nr++;
+	
+	if(dr > 0){
+		dr--;
+		V(reader)
+	}else{
+		V(mtx);
+	}
+	
+	read(BD);
+	
+	P(mtx)
+	nr--;
+	
+	if(nr == 0 && nw > 0){
+		nw--;
+		V(writer);
+	{else{
+		V(mtx);
+	}
+
+}
+
+process Writer[i = 1 to N]{
+	
+	P(mtx);
+	
+	if(nr > 0 || nw > 0){
+		dw++;
+		V(mtx);
+		P(writer);
+	}
+	
+	nw++;
+	V(mtx);
+	
+	write(BD);
+	
+	if(dw > 0){
+		dw --;
+		V(writer);
+	}else if (dr > 0){
+		dr--;
+		V(reader);
+	
+	}else{
+		V(mtx);
+	}
+}

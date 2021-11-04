@@ -1,0 +1,40 @@
+4.2. Semáforos como BARRERA
+// dos workers
+sem arrive1 = 0;
+sem arrive2 = 0;
+
+process Worker1{
+
+	while(true){
+		
+		
+		iter...
+		
+		V(arrive1);
+		P(arrive2);
+	}
+
+}
+
+process Worker2{
+
+	while(true){
+		
+		
+		iter...
+		V(arrive2);
+		P(arrive1);
+	
+	}
+}
+
+//n barreras
+sem[n] mtx = ([n]0);
+	process Worker[i = 1 to N]
+		while(true){
+			/*iteración-i*/
+			for[j = 1 to N with j != i]{
+				V(sem[i]);
+				P(sem[j]);
+			}
+		}

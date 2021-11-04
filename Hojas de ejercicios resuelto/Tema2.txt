@@ -1,0 +1,62 @@
+
+1 B)
+String nlinea = readline(stdin);
+
+while(!EOF){
+	co{
+		linea = readline(stdin)
+		//write(nlinea, output);
+		//write(nlinea, fp);
+	}oc
+	nlinea = linea ;
+	
+1 C)
+
+bool done = false;
+bool ficheroOut = false;
+bool ficheroFp = false;
+string linea = readline(stdin);
+
+co{
+	while (true){
+		string linea2 = readline(stdin);
+		if (liena2 == EOF){
+			done = true;
+			break;
+		}
+		<await(ficheroOut && ficheroOut)>;
+		liena = linea2;
+		ficheroOut = false;
+		ficheroFp = false;
+		
+		
+		
+co{
+	while(true)
+	{ <await(!ficheroOut or done == true)>;
+		if(done) break;
+		write(linea, output);
+		ficheroOut = ture;
+	}
+	
+	
+	
+2 A)
+	6 historias
+	Y = 5 ....
+	
+2 B)	
+	4 el primer proceso 
+	5 el segundo proceso 
+	9!/4!*5! = 126
+	
+	X = 5,4,3,2
+	Y = -1,-5,-4,-3,-2 
+
+
+3) 
+ 8 2 
+ 5 5
+ 4 4
+ 3 3
+ 2 2

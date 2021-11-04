@@ -1,0 +1,23 @@
+5. Cena de los filósofos
+5.1. Con un Semáforo Contador de Recursos
+Primero coge tenedor IZQ, luego DER y luego come.
+
+ sem fork[N] = ([N]1);
+
+ process filosofo[i = 0 to N-2] // empiezan todos en el mismo orden menos uno.(tenedor IZQ, luego DER)
+ 	while(true){
+ 		P(fork[i]); // el que tengo a la derecha que coincide con el idFilosofo
+ 		P(fork[(i + 1)%N]); // el que tengo a la izq
+ 			/* COMER */
+ 		V(fork[i]);  //libero
+ 		V(fork[(i+1)%N]); // libero 
+ 			/* PENSAR */
+
+ process ult_filosofo{ // coge el der y luego el izq
+ 	P(fork[0]);
+ 	P(fork[N-1]);
+ 		/* COMER */
+ 	V(fork[0]);
+ 	V(fork[N-1]);
+ 		/* PENSAR */
+ }

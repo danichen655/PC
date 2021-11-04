@@ -1,0 +1,107 @@
+El objetivo es garantizar cuatro propiedades: 
+1) Exclusión mutua: un proceso como máximo ejecutando CS. 
+2) No deadlock: si dos procesos intentan entrar, sólo y COMO MÍNIMO  y maximo 1 lo conseguirñá. 
+3) No retraso. 
+4) Live: un proceso que intenta entrar lo hará en algún momento.
+
+process CS[i = 1 to n]{
+	while(true){
+		CSEntry;
+		CS;
+		CSExit;
+		no_CS;
+	}
+}
+
+// No es buena solucion ya que no deja entrar el in2.
+
+bool in1 = false, in2 = false;
+
+process CS1{
+	
+	while(true){
+		<await (!in2) in1 = true>
+		CS,
+		in1 = false;
+		no CS,
+		
+	}
+}
+
+process CS2{
+	
+	while(true){
+		<await (!in1) in2 = true>
+		CS,
+		in2 = false;
+		no CS,
+		
+	}
+}
+--------------------------------------
+// solucion TS (equivalente a await) : 
+
+
+bool TS(bool lock){ // atomica por definicion.
+
+	<bool initial = lock;
+	lock = true;
+	return initial;
+	>
+} // ineficiente ya que estamos ecribiendo todo el rato en el lock 
+
+
+bool lock = false;
+
+process CS1 [i = 1 to N ]{
+	
+	while(true){
+		while(TS(lock))
+		CS,
+		in1 = false;
+		no CS,
+		
+	}
+}
+
+process CS2[i = 1 to N ] {
+	
+	while(true){
+		while(TS(lock))
+		CS,
+		in2 = false;
+		no CS,
+		
+	}
+}
+
+-------------------------------------
+=> solucion1 : Test & Test & Set
+
+bool TS(bool & lock){
+	bool initial = lock;		
+	lock = true;
+	return initial;
+}
+
+bool lock = false;
+process CS[i = 1 to n]{
+	while(true){
+		while (lock); while(TS(lock)){ while (lock);} // solo hace comprobaciones necesarias
+		CS
+		lock = false;
+		no_CS;
+	}
+}
+
+
+SOL2: Implementación AWAIT
+CSEntry;
+while(!B){
+	CSExit;
+	Delay;
+	CSEntry;
+}
+CS;
+CSExit;
+no_CS;

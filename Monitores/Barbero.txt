@@ -1,0 +1,93 @@
+ Ejecucion Cliente 				 			Barbero
+ barberia.get_haircut();					while(true){
+											barberia.get_next_customer;
+											/*cortar*/
+											
+											barberria.finished_cut()
+											/*descansar*/
+										}	
+ 
+ 
+ monitor Barbero{
+ 
+	int barbero = 0, silla = 0, abierto = 0;
+	cond b_disponible, silla_ocupado, puerta_abierta, cliente_sale;
+	
+		procedure getHairCut(){
+			while(barbero == 0) wait(b_disponible); // esperar a que haya barberos 
+			barbero = barbero - 1;
+
+			sillas = sillas + 1; // barbero coge la silla
+			signal(silla_ocupado);
+
+			while(abierto == 0) wait(puerta_abierta); // la espera de cortando el pelo
+
+			abierto = abierto - 1; // sale y decrementa
+			signal(cliente_sale); // para que el barbero sepa q el cliente sale
+		}
+
+		procedure get_Next_Customer(){
+			barbero = barbero + 1;
+			signal(b_disponible);
+			
+			while(sillas == 0) wait(silla_ocupado); // si no hay sillas
+			sillas = sillas - 1; // el barbero coge la silla
+		}
+
+		procedure finishedCut(){
+			abierto = abierto + 1; // abrir puerta
+			signal(puerta_abierta);
+			while(abierto > 0) wait(cliente_sale);
+		}
+ 
+ }
+ 
+  Ejecucion Cliente 				 			Barbero
+ barberia.get_haircut();					while(true){
+											barberia.get_next_customer;
+											/*cortar*/
+											
+											barberria.finished_cut()
+											/*descansar*/
+										}	
+ 
+ 
+ monitor Barbero{
+ 
+	int barbero = 0, silla = 0, abierto = 0;
+	cond b_disponible, silla_ocupado, puerta_abierta, cliente_sale;
+	
+	procedure getHairCut(){
+		
+		while(barbero == 0) wait(b_disponible);
+		b = b-1;
+		
+		silla = silla +1;
+		signal(silla_ocupado);
+		
+		while(abierto == 0) wait(puerta_abierta);
+		abierto--;
+		
+		signal(cliente_sale);
+	}
+
+	procedure get_Next_Customer(){
+		
+		barbero++;
+		signal(b_disponible);
+		
+		while(silla == 0) wait(silla_ocupado);
+		silla--;
+		
+	}
+
+	procedure finishedCut(){
+		abierto++;
+		signal(puerta_abierta)
+		
+		while(abierto > 0) wait(cliente_sale);
+		
+	}
+ 
+ }
+ 

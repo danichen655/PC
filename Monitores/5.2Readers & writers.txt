@@ -1,0 +1,82 @@
+Los readers pueden entrar siempre de forma concurrente con otros readers, 
+pero los escritores estan en exclusion mutua
+
+Readers
+rw_controller.request_read()
+read.....
+rw_controller.release_read()
+
+writers
+rw_controller.request_write()
+write.....
+rw_controller.release_write()
+
+
+
+monitor RWController {
+		int nr = 0, nw = 0;
+		cond oktoread, oktowrite;
+
+		procedure request_read(){
+			while(nw > 0) wait(oktoread);
+			nr++;
+		}
+
+		procedure release_read(){
+			nr--;
+			while (nr== 0)
+				signal(oktowrite);
+		}
+
+		procedure writeRequest(){
+			
+			while(nr > 0||nw > 0) wait(oktowrite);
+			nw++;
+			
+			
+		}
+
+		procedure writeRelease(){
+			
+			nw--;
+			if(!empty(oktoread)) signalAll (oktoread);
+			else signal(oktowrite)
+			
+		}	
+
+	}
+	
+
+
+monitor RWController {
+		int nr = 0, nw = 0;
+		cond oktoread, oktowrite;
+
+		procedure request_read(){
+			while(nw > 0) wait(oktoread);
+			nr = nr + 1;
+		}
+
+		procedure release_read(){
+			nr = nr - 1;
+			while(nr == 0) signal(oktowrite);
+		}
+
+		procedure writeRequest(){
+			while(nr > 0 || nw > 0) wait(oktowrite);
+			nw = nw + 1;
+		}
+
+		procedure writeRelease(){
+			nw = nw - 1;
+			¿while(nw == 0) signal(oktoread);?		/* Estrategia de RELEVO: vacío todos los lectores antes de un nuevo escritor */
+												/* Otra opción sería   signal(oktowrite);       y que se peleen ellos */
+																	   signal_all(oktoread);
+																	   
+												
+		/* De forma mas eficiente seria 	if empty(okwrite) {signalAll(oktoread)}
+											else signal(oktowrite);
+		}	
+
+	}
+	

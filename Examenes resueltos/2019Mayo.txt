@@ -1,0 +1,99 @@
+1)
+
+process Coordinador{
+
+	while(true){
+		for(i = 0 to N ){
+			while(arrive[i] == 0);
+			arrive[i] = 0;
+		}
+		
+		for(i = 0 to N ){
+			continue[i] = 1;
+		}
+		
+	}
+}
+
+2) 
+
+int ns = 0, ds = 0;
+Sem s = 0 , i = 0 , mtx = 1;
+int ni = 0, di = 0;
+int nd = 0,dd = 0;
+
+
+process buscadores [i = 1 to m]{
+
+	P(mtx)
+	
+	if(nd > 0){
+		ds++;
+		V(mtx);
+		P(s);
+	}
+	
+	ns++;
+	
+	if(ds > 0){
+		ds--;
+		V(s);
+	}else{
+		V(mtx);
+	}
+		
+	//Buscan;
+	
+	ns--;
+	P(mtx)
+	if(ns == 0 && di > 0){
+		di--;
+		V(i);
+	}else if (ns == 0 && dd > 0){
+		dd--;
+		V(d);
+	}else{
+		V(mtx);
+	}
+
+}
+
+
+4)
+
+monitor cuentaDeAhorro{
+
+    int balance = INI;
+
+    cond allocate, turn;
+    int waiting = 0, allocating = 0; 
+
+    procedure extraer(cantidad){
+
+        if(waiting > 0 || allocating > 0){
+
+            waiting++;
+            wait(turn);
+            waiting--;
+        }
+
+        while(cantidad < balance){
+            allocating++;
+            wait(allocate);
+            allocating--;
+        }
+
+        balance -= cantidad;
+        signal(turn);
+    }
+
+
+    procedure depositar(cantidad){
+
+        balance += cantidad
+
+        signal(allocate);
+    }
+}
+
+

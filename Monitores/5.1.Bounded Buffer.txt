@@ -1,0 +1,44 @@
+productores 
+	while (true){
+		p = ....
+		BB.depositar(p)
+	}
+	
+	
+conmidorers
+	
+	while(true){
+	
+		BB.extraer(p)
+		.....
+	}
+
+
+montiro BB {
+
+		typeBuff buf[N];		
+		int ini = 0;			/* 1er entero a consumir */
+		int fin = 0;			/* 1ª pos libre para prod */
+		int count = 0;			/* nº elementos (fin - ini) */
+		cond lleno, vacio;		/* colas de condicion prod,cons */
+
+		procedure deposit(typeProd data){
+			while(count == N)
+				wait(vacio);
+
+			buf[fin] = data;
+			fin = (fin + 1) % N;
+			count = count + 1;
+			signal(lleno);
+		}
+
+		procedure extraer(typeProd data){
+			while(count == 0)
+				wait(lleno);
+
+			data = buf[ini];
+			ini = (ini + 1) % N;
+			count = count - 1;
+			signal(vacio);
+		}
+	}

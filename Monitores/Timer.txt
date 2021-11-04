@@ -1,0 +1,43 @@
+	un temporizador 
+Recubrimiento 
+v1: ineficiente al despertar a todos
+	monitor Timer{
+		int tod = 0;
+		cond check;
+		
+		procedure tick(){
+			tod = tod +1;
+			signalAll(check);
+		}
+	
+		procedure delay(int interval){ // le retrasa su ejecucion con al menos time ticks 
+			int wakeup;
+			wakeup = tod +interval;		// se guardan en una varable local ya que se puede modificar el global
+			while(wakeup > tod) wait(check);
+			
+		}
+	
+	}
+	
+	
+v2: cola de prioridad
+
+con wait con prioridad
+
+monitor Timer {
+		int tod = 0;
+		cond check;
+
+		procedure delay(int interval){
+			int wakeup = tod + interval;
+			if(wakeup > tod) wait(check, wakeup);
+		}
+
+		procedure tick(){
+			tod = tod + 1;
+			while(!empty(check) &&
+				   mirank(check) <=  tod) // la prioridad del proceso que tiene en la cabeza.
+				signal(check);
+		}
+	}	
+	

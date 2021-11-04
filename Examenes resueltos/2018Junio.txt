@@ -1,0 +1,113 @@
+1)
+int u=0, v=1, w=2, x;
+co x=u+v+w;
+// u=3;
+// v=4;
+// w=5;
+oc
+
+
+x = 0+1+2 = 3
+x = 0+4+2 = 6
+x = 3+1+2 = 6
+x = 3+4+2 = 9
+x = 0+1+5 = 6
+x = 3+1+5 = 9
+x = 3+4+5 = 12
+x = 0+4+5 = 9
+
+2)
+
+buffer buf;
+int cont = 0;
+int dc = 0;
+
+Sem mtx = 1, listener  = 0;
+
+broadcast(int m)
+{
+	P(mtx);
+	buf = m;
+	if(cont > 0){
+		cont--;
+		V(listener);
+		
+	}else{
+		V(mtx);
+	}
+	
+}
+
+listen (int x)
+{
+	P(mtx);
+	++cont;
+	
+	V(mtx);
+	buf = x;
+	
+	P(listener)
+	
+	if(cont > 0){
+		cont--;
+		V(listener);
+	}else{
+		V(mtx);
+	}
+}
+
+
+3)
+
+monitor impresoras(){
+
+	bool freeA = true, freeB = true;
+	cond mon_A, mon_B;
+
+	procedure int request(int tipo){
+	
+		if(tipo == A ){
+			while(!freeA){
+				wait(mon_A);
+			}
+			freeA = false;
+			return A;
+		}else if(tipo == B){
+			while(!freeB){
+				wait(mon_B);
+			}
+			freeB = false;
+			return B;
+		}else if(tipo == C){
+			while(!freeA && !freeB){
+				wait(freeA);
+			}
+			
+			if(!freeB && freeA){
+				freeA = false;
+				return A;
+			}else if (!freeA && freeB){
+				freeB = false;
+				return B;
+			}else{
+				freeA = false;
+				return A;
+			}
+		}
+	}
+	
+	void release (int tipoImpresora){
+		if(tipoImpresora == A){
+			freeA = true;
+			signal(mon_A);
+		}
+		if(tipoImpresora == B){
+			freeB = true;
+			signal(mon_B);
+		}
+	
+	}
+
+
+}
+

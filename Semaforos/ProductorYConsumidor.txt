@@ -1,0 +1,112 @@
+Problema Productor Consumidor con Semáforos
+
+
+4.1. 1 productor, 1 consumidor 1 buffer tam 1
+	int buf;
+	sem empty = 1;
+	sem full = 0;
+	process Prod
+		while(true){
+			P(empty);
+			buf = data();
+			V(full);
+		}
+
+	process Cons
+		while(true){ 
+			P(full);
+			consumeBuf(buf);
+			V(empty);
+		}
+		
+------------------------------------------------
+		
+M productores, N consumidores, 1 buffer
+
+	typeB buf;
+
+	sem empty = 1;		// si esta vacio
+	sem full = 0;		// si esta lleno
+
+	process Productor[i = 1 to M]
+		while(true){
+			P(empty);
+			buf = dato();
+			V(full);
+		}
+
+	process Consumidor[i = 1 to N]
+		while(true){
+			P(full);
+
+			result = buf;
+
+			V(empty);
+		}
+		
+-------------------------------------------------		
+1 productores, 1 consumidores, K buffer
+
+	typeB buf[k];
+
+	sem empty = k;		// si esta vacio
+	sem full = 0;		// si esta lleno
+	int ini = 0;		// pos para ser consumido
+	int fin = 0;		// ultimo pos producido
+
+	process Productor
+		while(true){
+		
+			P(empty);
+			buf[fin] = dato();
+			fin = (fin+1) % k;
+			V(full);
+		}
+
+	process Consumidor
+		while(true){
+			P(full);
+
+			result = buf[ini];
+			ini = (ini+1) % k;
+
+			V(empty);
+		}
+
+-------------------------------------
+N productores, M consumidores, K buffer		
+
+	typeB buf[k];
+	
+	sem mutexP = 1;		/* para que entren solo un productor o consumidor
+	sen mutexC = 1;									*/
+	sem empty = k;		// si esta vacio
+	sem full = 0;		// si esta lleno
+	int ini = 0;		// pos para ser consumido
+	int fin = 0;		// ultimo pos producido
+
+process Productor[i = 1 to M]
+		while(true){
+		
+			P(empty);
+			P(mutexP);
+			buf[fin] = dato();
+			fin = (fin+1) % k;
+			V(mutexP);
+			V(full);
+		}
+
+	process Consumidor[i = 1 to N]
+		while(true){
+			P(full);
+			P(mutexC);
+			result = buf[ini];
+			ini = (ini+1) % k;
+			V(mutexC);
+			V(empty);
+		}
+
+
+
+
+

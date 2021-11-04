@@ -1,0 +1,36 @@
+	procedure createMon() : creo, cogo value y devuelvo
+
+	procedure enter(int mName){
+		encontrar descriptor monitor mName;
+			/* Si el procesador esta ocupado lo libero */
+		if(mLock == 1){
+			insertar executing en cola(mName);
+			executing = 0;
+		} else mLock = 1;
+		dispatcher();
+	}
+
+	procedure exit(int nMame){
+		encontrar descriptor monitor mName;
+		if(cola(mName) not empty){
+			extraer id de la cola(mName);
+			insertar id en ready;
+		} else mLock = 0;
+		dispatcher();
+	}
+
+	procedure wait(int mName, int cName){
+		encontrar descriptor monitor mName;
+		insertar executing en cola(cName);
+		executing = 0;
+		exit(mName);
+	}
+
+	procedure signal(int mName, int cName){
+		encontrar descriptor monitor mName;
+		if(cola(mName) not empty){
+			extraer id de la cola cName;
+			insertar id en la cola(mName);
+		}			
+		dispatcher();
+	}

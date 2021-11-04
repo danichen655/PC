@@ -1,0 +1,29 @@
+int executing = 0;
+	cond blocked, ready;
+
+	procedure createSem(int init, int * name){
+		obtener descriptor nuevo name;
+		value = init;
+		dispatcher();
+	}
+
+	procedure P(int name){
+		cargar descriptor de sem name;
+		if(value > 0) value = value - 1;
+		else{
+			insertar executing en blocked;
+			executing = 0;
+		}
+		dispatcher();
+	}
+
+	procedure V(int name){
+		cargar descriptor de sem name;
+		if(blocked is empty)
+			value = value + 1;
+		else{
+			sacar al proceso id de blocked;
+			insertar id en ready;
+		}				
+		dispatcher();
+	}

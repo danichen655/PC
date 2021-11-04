@@ -1,0 +1,34 @@
+7.1. Implementación semáforo convencional
+	monitor Semaforo{
+		int s = 0;
+		cond pos;
+
+		procedure V(){
+			s = s + 1;
+			signal(pos);
+		}
+
+		procedure P(){
+			while (s == 0)
+				wait(pos);
+			s = s - 1;
+		}
+	}
+	// se me pueden colar procesos como PT. 
+	7.2. Implementación Semáforo FIFO
+	monitor SemFifo{
+		int s = 0;
+		cond pos;
+
+		procedure V(){
+			if(empty(pos))
+				s = s + 1;
+			ele signal(pos);
+		}
+
+		procedure P(){
+			if(s == 0)
+				wait(pos);
+			else s = s - 1;
+		}
+	}

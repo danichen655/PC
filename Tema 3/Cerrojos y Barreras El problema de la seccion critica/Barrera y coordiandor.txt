@@ -1,0 +1,144 @@
+
+SOL1: WORKER y COORDINADOR
+
+int arrive[1..n] = ([n]0);
+int continue[1..n] = ([n]0);
+
+process worker[i = 1 to n]
+while(true){
+	código iteración i
+	arrive[i] = 1;
+	while(continue[i] == 0)
+		;
+	continue[i] = 0; // para preparar la siguiente coordinacion
+}
+
+process coord
+while(true){
+		// 1º ESPERO QUE LLEGUEN TODOS
+	for[i = 1 to n]{
+		while(arrive[i] == 0)
+			;
+		arrive[i] = 0;
+	}
+		// 2º INDICO QUE ARRANQUEN
+	for[i = 1 to n]
+		continue[i] = 1;
+}
+
+Sol2: barrera asimetrica sin coord
+Se trata de un árbol de procesos, en el cual los hijos avisan al padre de que han llegado 
+y el padre avisa a los hijos de que continuen. Así, podemos distinguir tres tipos de procesos: -Raíz R. -Nodo I. -Hoja L.
+
+			W
+		   / \
+		  W    W		
+		 / \  / \
+		W	W W   W	
+	
+		   
+process RootR
+while(true){
+	while(arrive[left(R)] == 0) //esperar a que su hijo izq le avise
+		;
+	arrive[left(R)] = 0; // limpieza del flap
+	while(arrive[right(R)] == 0)
+		;
+	arrive[right(R)] = 0;
+	continue[left(R)] = 1;
+	continue[right(R)] = 1;
+}
+
+process InterriorI
+while(true){
+	while(arrive[left(I)] == 0)
+		;
+	arrive[left(I)] = 0;
+	while(arrive[right(I)] == 0)
+		;
+	arrive[right(I)] = 0;
+	arrive[I] = 1; 
+	 
+	while(continue[I] == 0) // el padre le indica que hay que continuar
+		;
+	continue[I] = 0;
+	continue[left(I)] = 1;	//Avisar los hijo que hay que continuar
+	continue[right(I)] = 1;
+}
+
+process Hoja L
+while(true){
+	arrive[L] = 1;
+	while(continue[L] == 0)
+		;
+	continue[L] = 0;
+}
+
+
+Sol3 : Barreras simetricas
+Proceso I
+
+	<await (arrive[i]== 0)>;
+	arrive[i] = 1;
+	<await (arrive[j]== 1)>;
+	arrive[j] = 0;
+	
+Proceso J 
+	<await (arrive[j]== 0)>;
+	arrive[i] = 1;
+	<await (arrive[i]== 1)>;
+	arrive[j] = 0;
+	
+barrera(I,J)
+
+
+
+SOL2: Barrera de diseminación
+Se usa para cuando no son potencias de dos, y se usa la cota superior del logaritmo del número de procesos. 
+process worker[i = 1 to n]{ for[s = 1 to numEtapas]{ 
+1) MARCAR arrive[i] 
+2) DETERMINAR j a quien esperar (2^s) 
+3) ESPERAR a j } }
+
+
+BARRERA(I):
+
+  process Worker[i = 1 to N]
+  	for[s = 1 to numEtapas]{
+									1) MARCAR arrive[i]
+  		arrive[i] = arrive[i] + 1;
+									2) DETERMINAR a qué j espera i (mariposa = 2^s)
+									// depende de la barrera usada
+									3) ESPERAR a j
+  		while(arrive[j] < arrive[i])
+  			;
+  	}
+	
+Ej:
+	
+pos 	0 1 2 3 4 5
+a		1 2 3 4 5 6
+
+e=1		1 3 5 7 9 11     sumamoos lo que tiene a la izquierda
+e=2 	1 3 6 10 14 18   sumamos el numero de distancia 2
+e=3 	1 3 6 10 15 21	 sumamos el numero de la distancia 4
+
+
+	sum[0] = a[0];
+	for[i = 1 to N-1]
+		sum[i] = sum[i-1] + a[i];
+Implementación:
+	
+	int a[N], sum[N], old[N]
+  process sum[i = 0 to N-1]{
+  	int d = 1;		/* Distancia al proceso que nos comunicamos */
+  	sum[i] = a[i]; // inicializacion 
+  	while(d < n){
+  		old[i] = sum[i];
+  		BARRERA(i);
+  		if(i - d >= 0)	/* Si existe algún elemento d puestos a la DER de i */
+  			sum[i] = old[i-d] + sum[i];
+  		BARRERA(i);
+  		d = d + d;	/* Potencias de 2 */
+  	}
+  }

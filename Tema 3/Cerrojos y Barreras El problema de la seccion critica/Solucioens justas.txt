@@ -1,0 +1,108 @@
+SC: Soluciones justas, turnos para entrar
+Las soluciones anteriores requieren un planificador fuertemente justo y nuestras soluciones no pueden depender del hardware.
+
+RompeEmpate.
+
+
+SOL1: Tie-Break para n procesos
+
+
+	1	2	3	4      =  	 Etapa
+1						
+
+2	*				
+
+3					
+
+4	
+
+= procesos
+
+in[i] num etapa x proceso i
+last[i] id del proceso que llega ultimo a etapa i
+
+in[2] = 1
+last[1] = 2
+
+
+int in[1:N] = ([N]0);
+int last[1:N] = ([N]0);
+process CS[i = 1 to N]{
+	while(true){
+		for[j = 1 to N]{
+			in[i] = j;
+			last[j] = i;
+			for[k = 1 to numEtapas with k != i] 
+				while(in[k] > in[i] &&	
+					  last[j] == i)
+					  ;
+					 // Esperamos si hay un proceso K por delante
+					 // Y si yo soy el último en etapa J
+		}
+	}
+} 
+
+
+9-marzo , min34
+
+* el ultimo
+x no ultimo
+
+	1	2	3	4
+1	*						
+
+2		x	x	*					
+
+3	x	x	*						
+
+4	x	*		 		
+
+
+
+Solucion 2 
+
+Ticket
+
+ 
+int Fetch_Add(int var, int incr){	la sustitucion de  <turn[i] = number; number = number + 1;>
+	int tmp = var;
+	var = var + incr;
+	return tmp;
+}
+
+int turn[1..n] = ([n]0);
+int next = 1;
+int number = 1;
+
+process CS[i = 1 to n]{
+	while(true){
+		turn[i] = Fetch_Add(number,1);
+		while(turn[i] != next)
+			;
+		CS;
+		next = next + 1;
+		no_CS;
+	}
+}
+
+en alto nivel 
+Hay que sustituir Fetch&Add por ejecución atómica en <turn[i] = number; number = number + 1;>.
+
+
+
+SOL3: Bakery Como una panaderia cogiendo el turno (12-marzo)
+
+Hay que inventarse operador >>: (a,b) >> (c,d) = (a > c) or (a == c ^ b > d) int turn[1..n] = ([n]0); int next = 1; int number = 1;
+
+int turn[1:N] = ([N]0);
+
+process CS[i = 1 to n]{
+	while(true){
+		turn[i] = 1;
+		turn[i] = max(turno) + 1;
+		for[j = 1 to n with j != i] // comprobar si el turno de las otras personas es mas pequeño que el mio
+			while(turn[j] != 0 &&
+				  (turn[i],i) >> (turn[j,j]))
+				;
+	}
+}
